@@ -9,9 +9,12 @@
 
 		<style>
 			body {
-				--bg-1: hsl(0, 0%, 100%);
+				--bg-1: hsl(121, 0%, 94%);
 				--bg-2: hsl(206, 20%, 90%);
 				--bg-3: hsl(206, 20%, 80%);
+                --nicegreen: hsl(143, 42%, 49%);
+                --nicegreen2: hsl(143, 71%, 55%);
+                --darkishnav: hsl(143, 5%, 5%);
 				--fg-1: hsl(0, 0%, 13%);
 				--fg-2: hsl(0, 0%, 20%);
 				--fg-2: hsl(0, 0%, 30%);
@@ -31,8 +34,13 @@
 				height: calc(100vh - 2rem);
 			}
 
-			h1,
-			h2,
+            h1 {
+                font-family: var(--font-mono);
+                text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.3);
+            },
+			h2 {
+                font-family: var(--font-mono);
+            }
 			h3,
 			h4,
 			h5,
@@ -53,17 +61,17 @@
 			:is(h1, h2, h3, h4, h5, h6, p, label):first-child {
 				margin-top: 0;
 			}
-
+            
 			:is(h1, h2, h3, h4, h5, h6, p, label):last-child {
 				margin-bottom: 0;
 			}
 
 			a {
-				color: var(--link);
+				color: var(--nicegreen);
 			}
 
 			a:hover {
-				color: var(--link-hover);
+				color: var(--nicegreen2);
 			}
 
 			a:active {
@@ -156,7 +164,7 @@
 				display: flex;
 				gap: 1em;
 				padding: 1em;
-				background: var(--bg-2);
+				background: var(--darkishnav);
 				z-index: 2;
 				margin: 0 0 1em 0;
 				border-radius: var(--border-radius);
