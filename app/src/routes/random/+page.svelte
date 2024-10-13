@@ -1,2 +1,9 @@
 <h1>Random</h1>
-<p>Might put different fun stuff here, just to play around with</p>
+
+<h2>Cat facts</h2>
+<script>
+    import CatFact from '$lib/CatFacts.svelte';
+</script>
+<CatFact/>
+<p>(via catfact.ninja)</p>
+
