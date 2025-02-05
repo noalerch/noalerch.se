@@ -169,6 +169,13 @@ declare module 'astro:content' {
   collection: "blog";
   data: InferEntrySchema<"blog">
 } & { render(): Render[".md"] };
+"blog-start.md": {
+	id: "blog-start.md";
+  slug: "blog-start";
+  body: string;
+  collection: "blog";
+  data: InferEntrySchema<"blog">
+} & { render(): Render[".md"] };
 "customizing-astropaper-theme-color-schemes.md": {
 	id: "customizing-astropaper-theme-color-schemes.md";
   slug: "customizing-astropaper-theme-color-schemes";
@@ -179,13 +186,6 @@ declare module 'astro:content' {
 "dynamic-og-images.md": {
 	id: "dynamic-og-images.md";
   slug: "dynamic-og-image-generation-in-astropaper-blog-posts";
-  body: string;
-  collection: "blog";
-  data: InferEntrySchema<"blog">
-} & { render(): Render[".md"] };
-"example-draft-post.md": {
-	id: "example-draft-post.md";
-  slug: "example-draft-post";
   body: string;
   collection: "blog";
   data: InferEntrySchema<"blog">
