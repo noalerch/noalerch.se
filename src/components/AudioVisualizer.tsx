@@ -26,7 +26,7 @@ export default function AudioVisualizer() {
         // update and draw circles
         for (let i = circles.length - 1; i >= 0; i--) {
           const c = circles[i];
-          c.alpha -= 2; 
+          c.alpha -= 1; 
 
           p.noStroke();
           p.fill(255, 150, 50, c.alpha);
