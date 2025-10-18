@@ -1,5 +1,5 @@
 
-export default function AudioVisualizer() {
+export default function TracerBalls() {
   if (typeof window === "undefined") return;
 
   import("p5").then(({ default: p5 }) => {
@@ -21,33 +21,31 @@ export default function AudioVisualizer() {
           mousePosition, new Vector(), new Vector(), 20, 150
         ))
 
-        const accFactor = 0.4
+        const accFactor = 0.005
+        const friction = 0.98
 
         // update and draw circles
         for (let i = circles.length - 1; i >= 0; i--) {
           const c = circles[i];
-          c.alpha -= 1; 
-
-
-          const directionToMouse: Vector = Vector.subtract(mousePosition, c.position)
-          const acceleration: Vector = Vector.scale(accFactor, directionToMouse)
 
           p.noStroke();
           p.fill(255, 150, 50, c.alpha);
-          p.circle(c.x, c.y, c.size);
+          p.circle(c.position.x, c.position.y, c.size);
 
-          if (c.x < -c.size || c.alpha <= 0) {
+          const directionToMouse: Vector = Vector.subtract(mousePosition, c.position)
+          const acceleration: Vector = Vector.scale(accFactor, directionToMouse)
+          const velocity = Vector.scale(friction, Vector.add(c.velocity, acceleration))
+          const nextPosition = Vector.add(c.position, velocity)
+
+          if (nextPosition.x < -c.size || nextPosition.y < -c.size || c.alpha <= 0) {
             circles.splice(i, 1);
           }
 
-          c.x = moveLeft(c.x)
+          c.alpha -= 2; 
+          c.position = nextPosition
         }
       };
     };
-
-    const moveLeft = (x: number) => {
-        return x - 8
-    }
 
     new p5(sketch);
 
