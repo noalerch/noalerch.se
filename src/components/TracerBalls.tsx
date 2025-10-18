@@ -7,17 +7,50 @@ export default function TracerBalls() {
 
     const sketch = (p: p5) => {
       p.setup = () => {
-        p.createCanvas(window.innerWidth, window.innerHeight);
-        p.background(20, 20, 60);
+        p.createCanvas(window.innerWidth, window.innerHeight)
+        p.background(20, 20, 60)
+        p.smooth
       };
 
-      let circles: Circle[] = [];
+      let whiteCircles: Circle[] = []
+      let lightRedCircles: Circle[] = []
+      let lightningCircles: Circle[] = []
+      let greenCircles: Circle[] = []
+      let slowBlueCircles: Circle[] = []
+
+      const lightRedWalk = new RandomWalk(new Vector(window.innerWidth / 2, window.innerHeight / 2))
+
+      const lightningWalk = new RandomWalk(new Vector(window.innerWidth / 2, window.innerHeight / 2))
+      lightningWalk.stepSize = 50
+      lightningWalk.stepSizeDeviation = 8
+      lightningWalk.thetaDeviation = Math.PI / 48
+      
+      const greenWalk = new RandomWalk(new Vector(window.innerWidth / 2, window.innerHeight / 2))
+      greenWalk.stepSizeDeviation = 70
+      greenWalk.thetaDeviation = Math.PI / 2
+
+      const slowBlueWalk = new RandomWalk(new Vector(window.innerWidth / 2, window.innerHeight / 2))
+      slowBlueWalk.stepSize = 5
+      slowBlueWalk.thetaDeviation = Math.PI / 4
 
       p.draw = () => {
         let white: p5.Color = p.color(240, 240, 250)
+        let lightRed: p5.Color = p.color(250, 100, 100)
+        let lightning: p5.Color = p.color(250, 250, 125)
+        let green: p5.Color = p.color(100, 250, 100)
+        let slowBlue: p5.Color = p.color(60, 80, 220)
         p.background(5, 5, 20);
         p.fill(150);
-        renderCircles(p, circles, white, new Vector(p.mouseX, p.mouseY));
+        renderCircles(p, whiteCircles, white, new Vector(p.mouseX, p.mouseY));
+        renderCircles(p, lightRedCircles, lightRed, lightRedWalk.position)
+        renderCircles(p, lightningCircles, lightning, lightningWalk.position)
+        renderCircles(p, greenCircles, green, greenWalk.position)
+        renderCircles(p, slowBlueCircles, slowBlue, slowBlueWalk.position)
+        
+        lightRedWalk.step()
+        lightningWalk.step()
+        greenWalk.step()
+        slowBlueWalk.step()
       };
       
       p.windowResized = () => {
@@ -79,14 +112,64 @@ class Vector {
   }
 }
 
+class RandomWalk {
+  position: Vector
+  theta: number
+  stepSize: number = 15
+  stepSizeDeviation: number = 0
+  thetaDeviation: number = Math.PI / 12
+
+  xDomain = {min: 0, max: window.innerWidth}
+  yDomain = {min: 0, max: window.innerHeight}
+
+  constructor(position: Vector) {
+    this.position = position
+    
+    // random angle in radians
+    this.theta = Math.random() * 2 * Math.PI
+  }
+  
+  step() {
+    this.stepForward(this.stepSize, this.stepSizeDeviation, this.thetaDeviation)
+    this.constrainToWindow()
+  }
+
+  private stepForward(size: number, sizeDeviation: number, thetaDeviation: number) {
+    const theta = this.gaussian(this.theta, thetaDeviation) % (2 * Math.PI) // domain: 0-2pi (radian)
+    const stepSize = this.gaussian(size, sizeDeviation)
+    const stepVector: Vector = new Vector(stepSize * Math.cos(theta), stepSize * Math.sin(theta))
+    
+    this.position = Vector.add(this.position, stepVector)
+    this.theta = theta
+  }
+
+  private gaussian(mu: number, sigma: number): number {
+      const u1 = Math.random();
+      const u2 = Math.random();
+      const z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+      return mu + z * sigma;
+  }
+  
+    private constrainToWindow() {
+    if (this.position.x < this.xDomain.min || this.position.x > this.xDomain.max) {
+      this.theta = Math.PI - this.theta;
+      this.position.x = Math.max(this.xDomain.min, Math.min(this.xDomain.max, this.position.x))
+    }
+    if (this.position.y < this.yDomain.min || this.position.y > this.yDomain.max) {
+      this.theta = -this.theta;
+      this.position.y = Math.max(this.yDomain.min, Math.min(this.yDomain.max, this.position.y))
+    }
+  }
+}
+
 function renderCircles(p: p5, circles: Circle[], color: p5.Color, headPosition: Vector) {
 
   circles.push(new Circle(
-    headPosition, new Vector(), new Vector(), 20, color
+    headPosition, new Vector(), new Vector(), 25, color
   ));
 
   const accFactor = 0.005;
-  const friction = 0.98;
+  const friction = 0.90;
 
   // update and draw circles
   for (let i = circles.length - 1; i >= 0; i--) {
