@@ -41,11 +41,12 @@ export default function TracerBalls() {
         let slowBlue: p5.Color = p.color(60, 80, 220)
         p.background(5, 5, 20);
         p.fill(150);
-        renderCircles(p, whiteCircles, white, new Vector(p.mouseX, p.mouseY));
-        renderCircles(p, lightRedCircles, lightRed, lightRedWalk.position)
-        renderCircles(p, lightningCircles, lightning, lightningWalk.position)
-        renderCircles(p, greenCircles, green, greenWalk.position)
+
         renderCircles(p, slowBlueCircles, slowBlue, slowBlueWalk.position)
+        renderCircles(p, lightningCircles, lightning, lightningWalk.position)
+        renderCircles(p, lightRedCircles, lightRed, lightRedWalk.position)
+        renderCircles(p, greenCircles, green, greenWalk.position)
+        renderCircles(p, whiteCircles, white, new Vector(p.mouseX, p.mouseY));
         
         lightRedWalk.step()
         lightningWalk.step()
