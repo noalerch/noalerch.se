@@ -1,10 +1,9 @@
+import type p5 from "p5";
 
 export default function TracerBalls() {
   if (typeof window === "undefined") return;
 
   import("p5").then(({ default: p5 }) => {
-
-    let circles: Circle[] = [];
 
     const sketch = (p: p5) => {
       p.setup = () => {
@@ -12,38 +11,17 @@ export default function TracerBalls() {
         p.background(20, 20, 60);
       };
 
+      let circles: Circle[] = [];
+
       p.draw = () => {
-        p.background(0, 20);
+        let white: p5.Color = p.color(240, 240, 250)
+        p.background(5, 5, 20);
         p.fill(150);
-        const mousePosition = new Vector(p.mouseX, p.mouseY)
-
-        circles.push(new Circle(
-          mousePosition, new Vector(), new Vector(), 20, 150
-        ))
-
-        const accFactor = 0.005
-        const friction = 0.98
-
-        // update and draw circles
-        for (let i = circles.length - 1; i >= 0; i--) {
-          const c = circles[i];
-
-          p.noStroke();
-          p.fill(255, 150, 50, c.alpha);
-          p.circle(c.position.x, c.position.y, c.size);
-
-          const directionToMouse: Vector = Vector.subtract(mousePosition, c.position)
-          const acceleration: Vector = Vector.scale(accFactor, directionToMouse)
-          const velocity = Vector.scale(friction, Vector.add(c.velocity, acceleration))
-          const nextPosition = Vector.add(c.position, velocity)
-
-          if (nextPosition.x < -c.size || nextPosition.y < -c.size || c.alpha <= 0) {
-            circles.splice(i, 1);
-          }
-
-          c.alpha -= 2; 
-          c.position = nextPosition
-        }
+        renderCircles(p, circles, white, new Vector(p.mouseX, p.mouseY));
+      };
+      
+      p.windowResized = () => {
+        p.resizeCanvas(window.innerWidth, window.innerHeight);
       };
     };
 
@@ -54,13 +32,21 @@ export default function TracerBalls() {
 }
 
 class Circle {
+  private alphaDiff: number = 2
+
   constructor(
     public position: Vector,
     public velocity: Vector,
     public acceleration: Vector,
     public size: number,
-    public alpha: number
+    public color: p5.Color,
+    public alpha: number = 255,
   ) {}
+  
+  lowerAlpha() {
+    this.alpha -= this.alphaDiff
+    this.color.setAlpha(this.alpha)
+  }
 }
 
 class Vector {
@@ -90,5 +76,36 @@ class Vector {
 
   static scale(s: number, v: Vector) {
     return new Vector(s * v.x, s * v.y)
+  }
+}
+
+function renderCircles(p: p5, circles: Circle[], color: p5.Color, headPosition: Vector) {
+
+  circles.push(new Circle(
+    headPosition, new Vector(), new Vector(), 20, color
+  ));
+
+  const accFactor = 0.005;
+  const friction = 0.98;
+
+  // update and draw circles
+  for (let i = circles.length - 1; i >= 0; i--) {
+    const c = circles[i];
+
+    p.noStroke();
+    p.fill(c.color);
+    p.circle(c.position.x, c.position.y, c.size);
+
+    const directionToHead: Vector = Vector.subtract(headPosition, c.position);
+    const acceleration: Vector = Vector.scale(accFactor, directionToHead);
+    const velocity = Vector.scale(friction, Vector.add(c.velocity, acceleration));
+    const nextPosition = Vector.add(c.position, velocity);
+
+    if (nextPosition.x < -c.size || nextPosition.y < -c.size || c.alpha <= 0) {
+      circles.splice(i, 1);
+    }
+
+    c.lowerAlpha()
+    c.position = nextPosition;
   }
 }
